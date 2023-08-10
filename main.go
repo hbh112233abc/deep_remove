@@ -35,6 +35,7 @@ func cli() {
 		fmt.Println("Please input want remove file or directory:")
 	}
 }
+
 //删除操作
 func Remove(file_path string) {
 	fmt.Println(file_path)
@@ -85,48 +86,46 @@ func removeDir(path string) bool {
 	return true
 }
 
-//当前目录
-func currentDir() string {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
+var mw = &walk.MainWindow{}
+var inTE *walk.TextEdit
+
+func removeHandle(file_path string) {
+	if file_path == "" {
+		return
 	}
-	return filepath.ToSlash(dir)
+	result := ask("确定要删除:" + file_path)
+	if result == walk.DlgCmdYes {
+		Remove(file_path)
+		inTE.AppendText("删除了:" + file_path + "\r\n")
+	}
 }
 
-
-var mw = &walk.MainWindow{}
 func ui() {
-	var inTE *walk.TextEdit
+
 	MainWindow{
 		AssignTo: &mw,
-		Title:   "深度删除",
-		Size: Size{400, 200},
-		MaxSize: Size{400, 200},
-		Layout:  VBox{},
+		Title:    "深度删除",
+		Size:     Size{Width: 400, Height: 200},
+		MaxSize:  Size{Width: 400, Height: 200},
+		Layout:   VBox{},
 		Children: []Widget{
-			HSplitter{
-				Children: []Widget{
-					TextEdit{AssignTo: &inTE},
-				},
-			},
 			PushButton{
 				Text: "选择文件",
 				OnClicked: func() {
 					file_path := selectFile()
-					if file_path != "" {
-						inTE.AppendText(file_path+"\r\n")
-					}
+					removeHandle(file_path)
 				},
 			},
 			PushButton{
 				Text: "选择文件夹",
 				OnClicked: func() {
-					ask()
 					file_path := selectDir()
-					if file_path != "" {
-						inTE.AppendText(file_path+"\r\n")
-					}
+					removeHandle(file_path)
+				},
+			},
+			HSplitter{
+				Children: []Widget{
+					TextEdit{AssignTo: &inTE},
 				},
 			},
 		},
@@ -149,6 +148,7 @@ func selectFile() string {
 	log.Println("Select :", dlg.FilePath)
 	return dlg.FilePath
 }
+
 //选择目录操作
 func selectDir() string {
 	dlg := new(walk.FileDialog)
@@ -166,6 +166,6 @@ func selectDir() string {
 	return dlg.FilePath
 }
 
-func ask(){
-	walk.MsgBox(mw, "About", "Walk Image Viewer Example", walk.MsgBoxIconInformation)
+func ask(msg string) int {
+	return walk.MsgBox(mw, "提示", msg, walk.MsgBoxIconQuestion|walk.MsgBoxYesNo)
 }
