@@ -12,6 +12,8 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
+var version = "1.0.0"
+
 func main() {
 	if len(os.Args) > 1 {
 		cli()
@@ -22,6 +24,7 @@ func main() {
 
 //命令行模式
 func cli() {
+	fmt.Println("Windows Remove " + version)
 	fmt.Println("Please input want remove file or directory:")
 	input := bufio.NewScanner(os.Stdin) //初始化一个扫表对象
 	for input.Scan() {                  //扫描输入内容
@@ -96,12 +99,11 @@ func removeHandle(file_path string) {
 	result := ask("确定要删除:" + file_path)
 	if result == walk.DlgCmdYes {
 		Remove(file_path)
-		inTE.AppendText("删除了:" + file_path + "\r\n")
+		inTE.AppendText("成功删除 " + file_path + "\r\n")
 	}
 }
 
 func ui() {
-
 	MainWindow{
 		AssignTo: &mw,
 		Title:    "深度删除",
