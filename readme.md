@@ -13,5 +13,5 @@ rsrc -manifest main.manifest -ico icon.ico -o main.syso
 - 编译
 
 ```shell
-go build -ldflags "-X 'main.version=$(git rev-parse --short HEAD)' -H windowsgui" .
+go build -ldflags "-H windowsgui" .
 ```
